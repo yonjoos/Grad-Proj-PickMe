@@ -45,6 +45,13 @@ public class RecommendationController {
         System.out.println("==============================================");
         System.out.println("==============================================");
 
+        for(UserRecommendationDto user : userRecommendationDto){
+            System.out.println(user.toString());
+        }
+
+
+
+        /*
         if (!userRecommendationDto.isEmpty()) {
             System.out.println("============333333333333333333333=============");
             System.out.println("==============================================");
@@ -54,7 +61,9 @@ public class RecommendationController {
             return ResponseEntity.ok(userRecommendationDto);
         } else {
             return ResponseEntity.notFound().build();
-        }
+        }*/
+        System.out.println("===============5555555555==================");
+        return ResponseEntity.ok(userRecommendationDto);
     }
 
 }

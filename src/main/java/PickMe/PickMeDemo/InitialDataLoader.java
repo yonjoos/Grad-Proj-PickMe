@@ -1,10 +1,7 @@
 package PickMe.PickMeDemo;
 
 import PickMe.PickMeDemo.entity.*;
-import PickMe.PickMeDemo.repository.CategoryRepository;
-import PickMe.PickMeDemo.repository.PortfolioRepository;
-import PickMe.PickMeDemo.repository.PostsRepository;
-import PickMe.PickMeDemo.repository.UserRepository;
+import PickMe.PickMeDemo.repository.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -25,6 +22,7 @@ public class InitialDataLoader implements CommandLineRunner {
     private final PortfolioRepository portfolioRepository;
     private final PostsRepository postsRepository;
     private final CategoryRepository categoryRepository;
+    private final VectorSimilarityRepository vectorSimilarityRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -1095,5 +1093,69 @@ public class InitialDataLoader implements CommandLineRunner {
         // 초기 데이터 생성 및 저장(10)
         // ai 전문가 생성 예정
         // 게시물은 27부터 (유저 7, 9가 게시물이 4개임. 나머지는 3개.)
+
+
+
+        int dimension = 4;
+        int maxValue = 4; // Values can range from 0 to 4
+
+        // Generate and save pre-stored similarity data for all combinations
+        generateAndSaveSimilarityData(dimension, maxValue);
+
     }
+    private void generateAndSaveSimilarityData(int dimension, int maxValue) {
+        double defaultSimilarity = 0.0;
+
+        for (int i = 0; i <= maxValue; i++) {
+            for (int j = 0; j <= maxValue; j++) {
+                for (int k = 0; k <= maxValue; k++) {
+                    for (int l = 0; l <= maxValue; l++) {
+                        int[] vectorA = {i, j, k, l};
+                        for (int m = 0; m <= maxValue; m++) {
+                            for (int n = 0; n <= maxValue; n++) {
+                                for (int o = 0; o <= maxValue; o++) {
+                                    for (int p = 0; p <= maxValue; p++) {
+                                        int[] vectorB = {m, n, o, p};
+
+                                        double similarity = calculateCosineSimilarity(vectorA, vectorB);
+                                        // Create VectorSimilarity entity and save it
+                                        VectorSimilarity similarityPair = new VectorSimilarity(vectorA, vectorB);
+                                        similarityPair.setSimilarity(similarity);
+                                        vectorSimilarityRepository.save(similarityPair);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private double calculateCosineSimilarity(int[] vectorA, int[] vectorB) {
+        // Calculate the dot product of vectorA and vectorB
+        double dotProduct = 0;
+        double magnitudeA = 0;
+        double magnitudeB = 0;
+
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            magnitudeA += Math.pow(vectorA[i], 2);
+            magnitudeB += Math.pow(vectorB[i], 2);
+        }
+
+        // Calculate the magnitude (Euclidean norm) of each vector
+        magnitudeA = Math.sqrt(magnitudeA);
+        magnitudeB = Math.sqrt(magnitudeB);
+
+        // Calculate the cosine similarity
+        if (magnitudeA == 0 || magnitudeB == 0) {
+            // Handle the case of zero magnitude (avoid division by zero)
+            return 0.0;
+        } else {
+            return dotProduct / (magnitudeA * magnitudeB);
+        }
+    }
+
+
+
 }

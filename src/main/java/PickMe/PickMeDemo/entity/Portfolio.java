@@ -55,4 +55,9 @@ public class Portfolio extends BaseTimeEntity { //생성일, 수정일 다루는
         this.fileUrl = fileUrl;
     }
 
+    public int[] getVector(){
+        int[] result = {this.web, this.app,this.game, this.ai};
+        return result;
+    }
+
 }
