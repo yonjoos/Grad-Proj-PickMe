@@ -201,7 +201,7 @@ public class UserService {
     */
 
 
-    public List<UserRecommendationDto> getUserForRecommendation2(final String nickName){
+    public List<PortfolioCardDto> getUserForRecommendation2(final String nickName){
 
         System.out.println("=========A getUserForRecommendation2===========================");
 
@@ -235,7 +235,7 @@ public class UserService {
         System.out.println("=========C getUserForRecoxmmendation2===========================");
 
 
-        List<UserRecommendationDto> recommendedDtos = calculateSimilarity(user, randomUserIds, 3);
+        List<PortfolioCardDto> recommendedDtos = calculateSimilarity(user, randomUserIds, 3);
 
         System.out.println("=========D getUserForRecommendation2===========================");
         System.out.println("=========D getUserForRecommendation2===========================");
@@ -246,7 +246,7 @@ public class UserService {
     }
 
 
-    private List<UserRecommendationDto> calculateSimilarity(User targetUser, List<Long> userIds, int topN) {
+    private List<PortfolioCardDto> calculateSimilarity(User targetUser, List<Long> userIds, int topN) {
         QVectorSimilarity vectorSimilarity = QVectorSimilarity.vectorSimilarity;
 
         System.out.println("=========C-A getUserForRecommendation2===========================");
@@ -303,7 +303,9 @@ public class UserService {
                 UserRecommendationDto userDto = UserRecommendationDto.builder()
                         .userId(u.getId())
                         .userEmail(u.getEmail())
+                        .nickName(u.getNickName())
                         .fieldsOfInterests(u.getFieldsOfInterests())
+                        .briefIntro(u.getPortfolio().getShortIntroduce())
                         .build();
 
                 usersDto.add(userDto);
@@ -348,7 +350,23 @@ public class UserService {
                 .collect(Collectors.toList());
         System.out.println("=========C-F getUserForRecommendation2===========================");
 
-        return top3Users;
+        List<PortfolioCardDto> result = new ArrayList<>();
+
+        for(UserRecommendationDto top : top3Users){
+            PortfolioCardDto cardDtos = PortfolioCardDto.builder()
+                    .ai(top.getFieldsOfInterests()[3])
+                    .web(top.getFieldsOfInterests()[0])
+                    .app(top.getFieldsOfInterests()[1])
+                    .game(top.getFieldsOfInterests()[2])
+                    .nickName(top.getNickName())
+                    .email(top.getUserEmail())
+                    .shortIntroduce(top.getBriefIntro())
+                    .build();
+
+            result.add(cardDtos);
+        }
+
+        return result;
 
 
         // Now you can proceed to sort and select the top N users based on userSimilarities

@@ -45,7 +45,10 @@ function PortfolioCardPage() {
     }, [reload]);
 
     useEffect(()=>{
-        Recommend();
+        if(recommend == 1) {
+            Recommend();
+            setRecommend(0);
+        }
     }, [recommend])
 
     useEffect(() => {

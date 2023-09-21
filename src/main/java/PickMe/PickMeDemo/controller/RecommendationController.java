@@ -1,5 +1,6 @@
 package PickMe.PickMeDemo.controller;
 
+import PickMe.PickMeDemo.dto.PortfolioCardDto;
 import PickMe.PickMeDemo.dto.UserRecommendationDto;
 import PickMe.PickMeDemo.entity.User;
 import PickMe.PickMeDemo.service.PortfolioService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.sound.sampled.Port;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +29,7 @@ public class RecommendationController {
 
 
     @GetMapping("/recommend")
-    public ResponseEntity<List<UserRecommendationDto>> getRecommendation(Principal principal) {
+    public ResponseEntity<List<PortfolioCardDto>> getRecommendation(Principal principal) {
         System.out.println("===========111111111111111111=================");
         System.out.println("==============================================");
         System.out.println("==============================================");
@@ -39,13 +41,13 @@ public class RecommendationController {
 
         String email = principal.getName();
         String name = userService.findByEmail(email).getNickName();
-        List<UserRecommendationDto> userRecommendationDto = userService.getUserForRecommendation2(name);
+        List<PortfolioCardDto> userRecommendationDto = userService.getUserForRecommendation2(name);
         System.out.println("==========22222222222222222222222=============");
         System.out.println("==============================================");
         System.out.println("==============================================");
         System.out.println("==============================================");
 
-        for(UserRecommendationDto user : userRecommendationDto){
+        for(PortfolioCardDto user : userRecommendationDto){
             System.out.println(user.toString());
         }
 

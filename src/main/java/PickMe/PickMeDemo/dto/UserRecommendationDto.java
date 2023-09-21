@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class UserRecommendationDto {
 
     private Long userId;
+    private String nickName;
     private String userEmail;
     private int[] fieldsOfInterests = new int[4];
+    private String briefIntro;
 }
