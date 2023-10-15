@@ -32,8 +32,6 @@ const renderPosts = (posts, loadPosts, onClickPosts) => {
     }
   };
 
-
-
 // Component
 // RETURN : Bar-graph of fields of interest
 const renderPreferenceBar = (field, existingPreferences) => {
@@ -48,7 +46,6 @@ const renderPreferenceBar = (field, existingPreferences) => {
         </div>
     );
 };
-
 
 // Component (for > Component-renderPreferenceBar)
     // INPUT : fields of interests
@@ -170,4 +167,4 @@ const renderPortfolioFrame = (data, existingPreferences) => {
 }
 
   
-  export { renderPosts, renderPortfolioFrame};
+export { renderPosts, renderPortfolioFrame};
