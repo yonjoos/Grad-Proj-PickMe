@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Card, Row, Col, Radio, Progress } from 'antd';
 import { request } from '../../../hoc/request';
-import { renderPosts, renderPreferenceBar } from '../../utils/PortfolioUtils';
+import { renderPosts, renderPortfolioFrame } from '../../utils/PortfolioUtils';
 
 
 function PortfolioNotifyPage() {
@@ -165,92 +165,7 @@ function PortfolioNotifyPage() {
                 </div>
             ) : (
                 <div>
-                    <div style={{ marginLeft: '20%', marginRight: '20%', marginTop: '20px', marginBottom: '20px' }}>
-                        <div>
-                        
-                            <div style={{ fontSize: '35px' }}>
-                                
-                                
-                                <strong>Welcome To</strong> <i>{data && data.nickName}</i> <strong>'s page ❤️‍🔥</strong>
-                                {/* 
-                                        == 변경사항 ==
-                                        상단 <Divider> 제거, 선이 너무 많음
-                                        하단 <hr> 제거, 같은 이유
-                                    
-                                */}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>CONTACT : </strong>
-                                    {data && data.email}
-                                </div>
-                                <div style={{ fontSize: '12px' }}>
-                                    <strong>조회수 : </strong>
-                                    {data && data.viewCount}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    {/**  borderBottom: '3px solid black'은 <hr> 요소 하단에 검은색 실선 테두리를 추가하여 더 두껍고 굵게 표시합니다. '3px' 값을 조정하여 원하는 대로 두껍거나 얇게 만들 수 있습니다. */}
-                    <hr style={{ marginLeft: '15%', marginRight: '15%', borderBottom: '0.1px solid black' }} />
-
-                    <div style={{ marginLeft: '20%', fontSize: '12px' }}><strong>첨부 파일:</strong> {data && data.fileUrl}</div>
-
-                    <Row justify="center" style={{ marginTop: '20px' }}>
-                        <Col span={16}>
-                            <Row>
-                                <Col span={14}>
-                                    <Card title="ABOUT" style={{ height: '100%' }}>
-                                        {/* 
-                                            == 변경사항 ==
-                                            1) 라디오 카드, 한 줄 소개 카드 없애고
-                                            2) 그 두 개를 하나의 카드 안에 넣음
-                                        */}
-
-                                        <h6>Nick Name</h6>
-                                        {nickName}
-                                        <br></br>
-                                        <br></br>
-                                        <h6>Brief Introduction</h6>
-                                        {data && data.shortIntroduce ? (
-                                            data.shortIntroduce
-                                        ) : (
-                                            <p>No introduction available</p>
-                                        )}
-                                    </Card>
-
-
-                                </Col>
-                                <Col span={10}>
-                                    <Card title="관심 분야 선호도" style={{ height: '100%' }}>
-                                        {/* 
-                                        == 변경사항 ==
-                                        관심 분야 선호도 "그래프" -> 관심분야 선호도 그래프 
-                                    */}
-                                        {renderPreferenceBar('web', existingPreferences)}
-                                        {renderPreferenceBar('app', existingPreferences)}
-                                        {renderPreferenceBar('game', existingPreferences)}
-                                        {renderPreferenceBar('ai', existingPreferences)}
-                                    </Card>
-
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-
-                    <Row justify="center">
-                        <Col span={16}>
-                            <Card title="경력">
-                                <div style={{ whiteSpace: 'pre-wrap' }}>
-                                    {/** 받아온 데이터에 공백이 없으면, 40번째 글자 이후에 강제로 공백을 넣어주는 함수 */}
-                                    {/** Card안에 데이터를 넣는 경우 발생하는 문제인 것 같음. */}
-                                    {data && insertLineBreaks(data.introduce, 45)}
-                                </div>
-                            </Card>
-                        </Col>
-                    </Row>
+                    {data && renderPortfolioFrame(data, existingPreferences)}
                     <br></br>
                     <Row justify="center">
                         <Col span = {16}>
