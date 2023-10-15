@@ -5,7 +5,7 @@ import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_act
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Radio, Progress, Modal, message } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
-import { renderPosts } from '../../../utils/PortfolioUtils';
+import { renderPosts, renderPreferenceBar } from '../../../utils/PortfolioUtils';
 
 
 function MyPortfolioPage() {
@@ -64,30 +64,9 @@ function MyPortfolioPage() {
     Components ################################################################################################################
     */
     // 선호도 그래프 관련
-    const renderPreferenceBar = (field) => {
-        const preferenceValue = data && existingPreferences[field];
-        return (
-            <div style={{ marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                    <div style={{ width: '100px', textAlign: 'left', marginRight: '10px' }}>{field}:</div>
-                    <Progress percent={preferenceValue * 25} showInfo={false} strokeColor={getBarColor(field)} />
-                </div>
-            </div>
-        );
-    };
+    
 
     // 선호도 그래프 관련
-    const getBarColor = (field) => {
-        if (field === "web") {
-            return '#FE708F';
-        } else if (field === "app") {
-            return '#f9f56e';
-        } else if (field === "game") {
-            return '#83edff';
-        } else {
-            return '#91e2c3';
-        }
-    };
 
         
     // 백엔드에서 받아온 데이터에 공백이 없으면, maxCharacters번째 글자 이후에 공백을 넣어주는 함수
@@ -120,44 +99,6 @@ function MyPortfolioPage() {
         
         return chunks;
     }
-
-    const renderPosts = (posts) => {
-
-        if(loadPosts == "fold"){
-            return(
-
-                posts.map((post) => (
-                    <Row justify="center" key={post.id}>
-                    <Col span={16}>
-                        <Card 
-                        onClick={() => onClickPosts(post)}
-                        style = {{height:'150px'}}
-                        title={
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
-                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
-                            </div>
-                        }>
-                            <div>
-                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
-                            </div>
-                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
-                                {post.briefContent}
-                            </div>
-                        </Card>
-                    </Col>
-                    </Row>
-                ))
-            )
-        }
-        else{
-            return(
-                <div></div>
-            )
-        }
-
-
-    };
 
 
     /*
@@ -321,12 +262,14 @@ function MyPortfolioPage() {
 
                                 </Col>
                                 <Col span={10}>
+                                    if (data){
                                     <Card title="관심 분야 선호도" style={{ height: '100%' }}>
-                                        {renderPreferenceBar('web')}
-                                        {renderPreferenceBar('app')}
-                                        {renderPreferenceBar('game')}
-                                        {renderPreferenceBar('ai')}
+                                        {renderPreferenceBar('web', existingPreferences)}
+                                        {renderPreferenceBar('app', existingPreferences)}
+                                        {renderPreferenceBar('game', existingPreferences)}
+                                        {renderPreferenceBar('ai', existingPreferences)}
                                     </Card>
+                                    }
 
                                 </Col>
                             </Row>

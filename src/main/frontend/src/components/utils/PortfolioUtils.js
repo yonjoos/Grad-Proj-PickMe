@@ -1,4 +1,4 @@
-import { Button, Card, Row, Col} from 'antd';
+import { Button, Card, Row, Col, Progress} from 'antd';
 
 // Component
     // INPUT : PostsListsDTO
@@ -33,5 +33,36 @@ const renderPosts = (posts, loadPosts, onClickPosts) => {
   };
 
 
+
+// Component
+// RETURN : Bar-graph of fields of interest
+const renderPreferenceBar = (field, existingPreferences) => {
+
+    const preferenceValue = 1 && existingPreferences[field];
+    return (
+        <div style={{ marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                <div style={{ width: '100px', textAlign: 'left', marginRight: '10px' }}>{field}:</div>
+                <Progress percent={preferenceValue * 25} showInfo={false} strokeColor={getBarColor(field)} />
+            </div>
+        </div>
+    );
+};
+
+
+// Component (for > Component-renderPreferenceBar)
+    // INPUT : fields of interests
+    // OUTPUT : 필드에 따른 색상코드
+const getBarColor = (field) => {
+    if (field === "web") {
+        return '#FE708F';
+    } else if (field === "app") {
+        return '#f9f56e';
+    } else if (field === "game") {
+        return '#83edff';
+    } else {
+        return '#91e2c3';
+    }
+};
   
-  export { renderPosts };
+  export { renderPosts, renderPreferenceBar };
