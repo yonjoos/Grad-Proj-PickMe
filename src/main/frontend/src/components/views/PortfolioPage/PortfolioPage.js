@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
+import { renderPosts } from '../../../components/utils/postUtils';
+
 
 function PortfolioPage() {
     const navigate = useNavigate();
@@ -98,8 +100,6 @@ function PortfolioPage() {
                 <div></div>
             )
         }
-
-
     };
 
 
@@ -383,7 +383,7 @@ function PortfolioPage() {
 
                     {/* >> Posts << */}
                     {postData && postData.length > 0 ? (
-                        renderPosts(postData)
+                        renderPosts(postData, loadPosts, onClickPosts)
                         ) : (
                             <div></div>
 

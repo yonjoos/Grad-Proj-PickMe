@@ -5,6 +5,8 @@ import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_act
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Radio, Progress, Modal, message } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
+import { renderPosts } from '../../../../components/utils/postUtils';
+
 
 function MyPortfolioPage() {
     const dispatch = useDispatch();
@@ -376,7 +378,7 @@ function MyPortfolioPage() {
                         </Col>
                     </Row>
                     {postData && postData.length > 0 ? (
-                        renderPosts(postData)
+                        renderPosts(postData, loadPosts, onClickPosts)
                         ) : (
                             <div></div>
 

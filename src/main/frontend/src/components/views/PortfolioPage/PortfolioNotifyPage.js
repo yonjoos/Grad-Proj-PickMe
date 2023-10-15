@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Card, Row, Col, Radio, Progress } from 'antd';
 import { request } from '../../../hoc/request';
+import { renderPosts } from '../../../components/utils/postUtils';
+
 
 function PortfolioNotifyPage() {
     const navigate = useNavigate();
@@ -126,46 +128,7 @@ function PortfolioNotifyPage() {
 
 
 
-    // Component
-    // INPUT : PostsListsDTO
-    // RETURN : Posts Lists <Card> components
-    const renderPosts = (posts) => {
-
-        if(loadPosts == "fold"){
-            return(
-
-                posts.map((post) => (
-                    <Row justify="center" key={post.id}>
-                    <Col span={16}>
-                        <Card 
-                        onClick={() => onClickPosts(post)}
-                        style = {{height:'150px'}}
-                        title={
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <div style={{ fontWeight: 'bold' }}>{post.title}</div>
-                                <div style={{ fontSize: '12px', color: 'gray' }}>{post.postType}</div>
-                            </div>
-                        }>
-                            <div>
-                                {post.web ? "#Web " : ""}{post.app ? "#App " : ""}{post.game ? "#Game " : ""}{post.ai ? "#AI " : ""}
-                            </div>
-                            <div style = {{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%'}}>
-                                {post.briefContent}
-                            </div>
-                        </Card>
-                    </Col>
-                    </Row>
-                )))
-        }
-        else{
-            return(
-                <div></div>
-            )
-        }
-
-
-    };
-
+    
     
 
     /*
@@ -339,7 +302,7 @@ function PortfolioNotifyPage() {
                         </Col>
                     </Row>
                     {postData && postData.length > 0 ? (
-                        renderPosts(postData)
+                        renderPosts(postData, loadPosts, onClickPosts)
                         ) : (
                             <div></div>
 
