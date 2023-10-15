@@ -5,7 +5,7 @@ import { uploadPortfolioSuccess, deletePortfolioSuccess } from '../../../../_act
 import { useState, useEffect } from 'react';
 import { Card, Row, Col, Button, Radio, Progress, Modal, message } from 'antd';
 import { request, setHasPortfolio } from '../../../../hoc/request';
-import { renderPosts } from '../../../../components/utils/postUtils';
+import { renderPosts } from '../../../utils/PortfolioUtils';
 
 
 function MyPortfolioPage() {

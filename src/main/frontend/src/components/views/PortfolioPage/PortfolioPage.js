@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Button, Card, Row, Col, Radio, Progress, Divider } from 'antd';
 import { lastVisitedEndpoint } from '../../../_actions/actions';
 import { request } from '../../../hoc/request';
-import { renderPosts } from '../../../components/utils/postUtils';
+import { renderPosts } from '../../utils/PortfolioUtils';
 
 
 function PortfolioPage() {

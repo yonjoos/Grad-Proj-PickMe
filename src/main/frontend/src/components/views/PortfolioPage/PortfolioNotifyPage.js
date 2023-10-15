@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Card, Row, Col, Radio, Progress } from 'antd';
 import { request } from '../../../hoc/request';
-import { renderPosts } from '../../../components/utils/postUtils';
+import { renderPosts } from '../../utils/PortfolioUtils';
 
 
 function PortfolioNotifyPage() {
