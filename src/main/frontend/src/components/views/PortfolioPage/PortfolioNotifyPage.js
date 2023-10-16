@@ -189,10 +189,8 @@ function PortfolioNotifyPage() {
                             <div></div>
 
                     )}
-
                     <br />
                     <br />
-
                 </div>
             )}
         </div>
