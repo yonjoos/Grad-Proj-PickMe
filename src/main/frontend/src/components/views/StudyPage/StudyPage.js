@@ -56,44 +56,32 @@ function StudyPage() {
   useEffect(() => {
     console.log("현재 선택된 배너 정보", selectedBanners);
     console.log("현재 검색 완료된 키워드: ", searchTerm);
-    fetchFilteredPosts();
+
+    if (currentSearchTerm.length !== "") {
+      setSearchData({
+        studySearchDtoList: [],
+      });
+    } else {
+      fetchFilteredPosts(
+        new URLSearchParams({
+          searchTerm: currentSearchTerm,
+        })
+      );
+    }
   }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
-  // 백엔드에 연관 검색어에 기반한 스터디 제목 값을 받아오기 위한 요청 보내기
-  const fetchFilteredSearchLists = async () => {
-    try {
-      // 만약 검색어가 있다면,
-      if (currentSearchTerm !== "") {
-        const queryParams = new URLSearchParams({
-          searchTerm: currentSearchTerm, // 검색어 세팅
-        });
-
-        // 백엔드에서 데이터 받아오기
-        const response = await request(
-          "GET",
-          `/getFilteredSearchLists?${queryParams}`
-        );
-
-        // 데이터가 있다면 세팅, 없으면 각각 빈 배열로 세팅
-        if (response.data) {
-          setSearchData({
-            studySearchDtoList: response.data.studySearchDtoList || [],
-          });
-        } else {
-          // Handle the case where response.data.content is undefined
-          console.error(
-            "Error fetching data: response.data.content is undefined"
-          );
-        }
-      } else {
-        // 검색어가 없다면, 빈 배열로 세팅
+  const fetchFilteredSearchLists = (queryParams) => {
+    request("GET", `/getFilteredStudies?${queryParams}`).then((res) => {
+      if (res.data) {
         setSearchData({
-          studySearchDtoList: [],
+          studySearchDtoList: res.data.studySearchDtoList || [],
         });
+      } else {
+        throw new Error(
+          "Error fetching data: response.data.content is undefined"
+        );
       }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    });
   };
 
   // 백엔드에서 받아온 연관 검색어(스터디) 결과를 가지고 실제 렌더링 진행.
