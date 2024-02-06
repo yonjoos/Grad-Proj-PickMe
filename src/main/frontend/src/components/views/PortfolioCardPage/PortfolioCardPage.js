@@ -122,11 +122,7 @@ function PortfolioCardPage() {
   useEffect(() => {
     const recommendedList = selectedRecommendedList;
 
-    console.log("-----------------", recommendedList);
-
     setRecommendedData(recommendedList);
-
-    console.log("세팅된 데이터=================", recommendedList);
 
     dispatch(setRecommendPortfolioView(true));
     setIsRecommededPortfolioView(true);
@@ -136,7 +132,7 @@ function PortfolioCardPage() {
   const fetchFilteredSearchLists = async () => {
     try {
       // 만약 검색어가 있다면,
-      if (currentSearchTerm !== "") {
+      if (currentSearchTerm?.length) {
         const queryParams = new URLSearchParams({
           searchTerm: currentSearchTerm, // 검색어 세팅
         });
