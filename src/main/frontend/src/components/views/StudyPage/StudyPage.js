@@ -44,7 +44,17 @@ function StudyPage() {
   useEffect(() => {
     console.log("현재 검색된 키워드: ", currentSearchTerm);
     setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
-    fetchFilteredSearchLists();
+    if (currentSearchTerm.length !== "") {
+      setSearchData({
+        studySearchDtoList: [],
+      });
+    } else {
+      fetchFilteredSearchLists(
+        new URLSearchParams({
+          searchTerm: currentSearchTerm,
+        })
+      );
+    }
   }, [currentSearchTerm]);
 
   // 페이지가 새로 마운트 될 때마다 실행됨.
@@ -56,18 +66,16 @@ function StudyPage() {
   useEffect(() => {
     console.log("현재 선택된 배너 정보", selectedBanners);
     console.log("현재 검색 완료된 키워드: ", searchTerm);
-
-    if (currentSearchTerm.length !== "") {
-      setSearchData({
-        studySearchDtoList: [],
-      });
-    } else {
-      fetchFilteredPosts(
-        new URLSearchParams({
-          searchTerm: currentSearchTerm,
-        })
-      );
-    }
+    fetchFilteredPosts(
+      new URLSearchParams({
+        //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+        selectedBanners: selectedBanners.join(","), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
+        page: currentPage, //현재 페이지 정보
+        size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+        sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+        searchTerm: searchTerm, // 검색어 키워드 문자열
+      })
+    );
   }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
   const fetchFilteredSearchLists = (queryParams) => {
@@ -87,12 +95,7 @@ function StudyPage() {
   // 백엔드에서 받아온 연관 검색어(스터디) 결과를 가지고 실제 렌더링 진행.
   // 스터디를 각각 카드로 감싸고, 그 안엔 버튼으로 감쌈
   const renderSection = (title, dataArray) => {
-    const handleButtonClick = (title, id, name) => {
-      // dispatch(lastVisitedEndpoint('/study', '/study', '/study'));
-      // setLastVisitedEndpoint('/study');
-      // setLastLastVisitedEndpoint('/study');
-      // setLastLastLastVisitedEndpoint('/study');
-
+    const handleButtonClick = (title, id) => {
       // 각각에 대해 올바르게 라우팅 걸어주기
       if (title === "Study") {
         navigate(`/study/detail/${id}`);
@@ -117,7 +120,7 @@ function StudyPage() {
                   padding: 0,
                   margin: 0,
                 }}
-                onClick={() => handleButtonClick(title, item.id, item.name)}
+                onClick={() => handleButtonClick(title, item.id)}
               >
                 {truncateString(item.name, 55)}
               </Button>
@@ -130,38 +133,19 @@ function StudyPage() {
   };
 
   // 실제 백엔드에 동적 쿼리 보내는 곳
-  const fetchFilteredPosts = async () => {
-    try {
-      const queryParams = new URLSearchParams({
-        //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
-        selectedBanners: selectedBanners.join(","), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
-        page: currentPage, //현재 페이지 정보
-        size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-        sortOption: sortOption, // 최신 등록순, 모집일자 마감순
-        searchTerm: searchTerm, // 검색어 키워드 문자열
+  const fetchFilteredPosts = (queryParams) => {
+    request("GET", `/getFilteredStudies?${queryParams}`)
+      .then((res) => {
+        setData(res.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
+        setTotalPages(res.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err);
       });
-
-      //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
-      const response = await request(
-        "GET",
-        `/getFilteredStudies?${queryParams}`
-      );
-
-      setData(response.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
-      setTotalPages(response.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
   };
 
   // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
   const handleRowClick = (studyId) => {
-    // /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-    // 가장 마지막에 저장한 엔드포인트인 /study로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /study로 설정
-    // dispatch(lastVisitedEndpoint('/study', '/study', '/study'));    // 전역에 상태 저장을 위한 애.
-    // setLastVisitedEndpoint('/study');   // 새로고침 문제를 해결하기 위한 애. 로컬스토리지에 저장.
-    // setLastLastVisitedEndpoint('/study');
-    // setLastLastLastVisitedEndpoint('/study');
     navigate(`/study/detail/${studyId}`);
   };
 
