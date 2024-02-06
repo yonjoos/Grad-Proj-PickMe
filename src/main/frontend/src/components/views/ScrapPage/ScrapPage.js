@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { truncateString } from '../../utils/common';
 import { useNavigate, Link } from 'react-router-dom';
 //import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from 'antd';
@@ -181,13 +182,6 @@ function ScrapPage() {
     //     );
     // }
 
-    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
-    const truncateString = (str, maxLength) => {
-        if (str.length > maxLength) {
-            return str.slice(0, maxLength) + '...';
-        }
-        return str;
-    };
 
     // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
     const formatDateTime = (dateTimeArray) => {
