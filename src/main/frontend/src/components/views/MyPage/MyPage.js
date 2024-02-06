@@ -30,6 +30,7 @@ import axios from "axios";
 import { getAuthToken } from "../../../hoc/request";
 
 const { Item } = Form;
+
 function MyPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();

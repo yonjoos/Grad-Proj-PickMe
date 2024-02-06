@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { truncateString } from "../../utils/common";
+import { truncateString, formatDate, formatDateTime } from "../../utils/common";
 import { useNavigate, Link } from "react-router-dom";
 //import { useDispatch } from 'react-redux';
 import { Divider, Row, Col, Button, Card, Pagination, message } from "antd";
@@ -58,20 +58,6 @@ function ScrapPage() {
       : navigate(`/study/detail/${postsId}`);
   };
 
-  // 게시물 목록에서 닉네임 필드를 클릭하면, 해당 닉네임을 가진 회원의 포트폴리오 창으로 navigate
-  const handleNicknameClick = (nickName) => {
-    navigate(`/portfolio/${nickName}`);
-  };
-
-  // 2023826 -> 2023년 8월 26일 형식으로 변환
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Month is zero-based
-    const day = date.getDate();
-    return `${year}년 ${month}월 ${day}일`;
-  };
-
   // 최신등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
   const handleSortOptionChange = (option) => {
     setSortOption(option);
@@ -84,160 +70,6 @@ function ScrapPage() {
     setCurrentPage(0);
   };
 
-  // 지원자 또는 글쓴이 닉네임 클릭 핸들러
-  const handleNickNameClick = (nickName) => {
-    // dispatch(lastVisitedEndpoint('/scrap', '/scrap', '/scrap'));
-    // setLastVisitedEndpoint('/scrap');
-    // setLastLastVisitedEndpoint('/scrap');
-    // setLastLastLastVisitedEndpoint('/scrap');
-    // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
-    navigate(`/portfolio/${nickName}`);
-  };
-
-  // const renderPosts = (posts) => {
-  //     return (
-  //        <div>
-  //             {posts.map((item, index) => (
-  //                 <Card key={index} style={{ margin: '0 0 10px 0' }}>
-  //                     <Divider className="bold-divider" />
-  //                     <Row gutter={[16, 16]} style={{ marginTop: '20px' }} justify="center" align="middle">
-  //                         <Col span={12} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-  //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-  //                                 <strong style={{ fontSize: '18px' }}>{item.title}</strong>
-  //                             </div>
-  //                             <div style={{ marginLeft: '3px' }}>
-  //                                 분류: {item.web ? "Web " : ""}{item.app ? "App " : ""}{item.game ? "Game " : ""}{item.ai ? "AI " : ""}
-  //                             </div>
-  //                         </Col>
-  //                         <Col span={6} className="vertical-line2" onClick={() => handleRowClick(item.id, item.postType)} style={{ cursor: 'pointer' }}>
-  //                             <div className="shape-outline mb-1" style={{ marginLeft: '3px' }}>
-  //                                 인원: {item.counts} / {item.recruitmentCount}
-  //                             </div>
-  //                             <div style={{ marginLeft: '3px' }}>
-  //                                 모집 마감일: {formatDate(item.endDate)}
-  //                             </div>
-  //                         </Col>
-  //                         <Col span={6}>
-  //                             <div style={{ display: 'flex', justifyContent: 'space-between', borderRight: '1px' }}>
-  //                                 <div>
-  //                                     <div>
-  //                                         작성자
-  //                                     </div>
-  //                                     <div onClick={() => handleNickNameClick(item.nickName)} style={{ cursor: 'pointer' }}>
-  //                                         {item.nickName}
-  //                                         <Button size="small" onClick={() => handleNickNameClick(item.nickName)} style={{ marginLeft: '5px' }}>
-  //                                             포트폴리오
-  //                                         </Button>
-  //                                     </div>
-  //                                 </div>
-  //                                 {/** alignItems로 상하의 가운데에 놓기 */}
-  //                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-  //                                     <div>
-  //                                         {item.isApplied ? (
-  //                                             // 게시물에 지원했을 때 보여줄 내용
-  //                                             item.isApproved ? (
-  //                                                 // 승인이 완료되었다면
-  //                                                 "승인 완료"
-  //                                             ) : (
-  //                                                 // 승인이 완료되지 않았다면
-  //                                                 item.counts === item.recruitmentCount ? (
-  //                                                     // 정원이 다 찼다면, 모집 마감을 보여줌
-  //                                                     "모집 마감"
-  //                                                 ) : (
-  //                                                     // 정원이 다 안찼다면, 승인 대기 중을 보여줌
-  //                                                     "승인 대기 중"
-  //                                                 )
-  //                                             )
-  //                                         ) : (
-  //                                             // 게시물에 지원하지 않았을 때 보여줄 내용
-  //                                             item.counts === item.recruitmentCount ? (
-  //                                                 // 정원이 다 찼다면, 모집 마감을 보여줌
-  //                                                 "모집 마감"
-  //                                             ) : (
-  //                                                 // 정원이 다 안찼다면, 승인 대기 중을 보여줌
-  //                                                 "미지원"
-  //                                             )
-  //                                         )}
-  //                                     </div>
-  //                                 </div>
-  //                             </div>
-  //                         </Col>
-  //                     </Row>
-  //                     <Divider className="bold-divider" />
-  //                 </Card>
-  //             ))}
-  //         </div>
-  //     );
-  // }
-
-  // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환
-  const formatDateTime = (dateTimeArray) => {
-    if (!Array.isArray(dateTimeArray)) {
-      // dateTimeArray가 배열이 아닌 경우 오류 처리
-      return "Invalid date and time format";
-    }
-    const [year, month, day, hours, minutes] = dateTimeArray;
-    const date = new Date(year, month - 1, day, hours, minutes);
-
-    // 년, 월, 일, 시간, 분 형식으로 포맷팅
-    const formattedYear = date.getFullYear();
-    const formattedMonth = (date.getMonth() + 1).toString().padStart(2, "0"); // 월을 2자리로 표현
-    const formattedDay = date.getDate().toString().padStart(2, "0"); // 일을 2자리로 표현
-    const formattedHours = date.getHours().toString().padStart(2, "0"); // 시를 2자리로 표현
-    const formattedMinutes = date.getMinutes().toString().padStart(2, "0"); // 분을 2자리로 표현
-
-    const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
-
-    return formattedDateTime;
-  };
-
-  // const categoryTagStyle = {
-  //     display: 'inline-block',
-  //     padding: '0px 5px 0px 5px',
-  //     backgroundColor: '#ff9900', /* 원하는 색상으로 변경 */
-  //     borderRadius: '50px', /* 타원형 모양을 만들기 위해 사용 */
-  //     marginLeft: '5px', /* 태그 사이 간격 조절을 위해 사용 */
-  //     color: '#677779', /* 텍스트 색상 설정 */
-  //     marginLeft: '-0.3%',
-  //     marginRight: '0.6%'
-  // };
-
-  // const renderPosts = (posts) => {
-  //     return (
-  //        <div gutter={[16, 16]} style={{ marginTop: '0px', padding: '0px', width:'100%' }} justify="space-between">
-  //             <Card title={`SCRAPS`}>
-  //             {posts.map((item, index) => (
-  //                 <div key={index} style={{ display: 'grid', cursor: 'pointer' }} onClick={() => handleRowClick(item.id, item.postType)}>
-  //                     <div style={{marginLeft:'10px' }}>
-  //                         {item.postType}
-  //                     </div>
-  //                     <div style={{ display: 'flex', marginTop: '0px' }}>
-  //                         <div style={{ width: '80%', display: 'grid', marginLeft:'10px' }}>
-  //                             <div>
-  //                                 <strong style={{ fontSize: '18px' }}>{truncateString(item.title, 40)}</strong>
-  //                             </div>
-  //                             <strong style={{ display: 'inline-block' }}>
-  //                                 {item.web && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#WEB</span>}
-  //                                 {item.app && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#APP</span>}
-  //                                 {item.game && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#GAME</span>}
-  //                                 {item.ai && <span style={{ ...categoryTagStyle, backgroundColor: '#91e2c3' }}>#AI</span>}
-  //                             </strong>
-  //                         </div>
-  //                         <div style={{ display: 'grid', marginLeft: '0px', width: '200px', alignItems:'center' }}>
-  //                             <div>
-  //                             인원: {item.counts} / {item.recruitmentCount} <br></br>마감: {formatDate(item.endDate)}
-  //                             <br/><div style={{color: 'gray', fontSize: 'small'}}>{formatDateTime(item.finalUpdatedTime)}</div>
-  //                             </div>
-  //                         </div>
-  //                     </div>
-  //                     <Divider />
-  //                 </div>
-  //             ))}
-  //             </Card>
-  //         </div>
-  //     );
-  // }
-
   const categoryTagStyle = {
     display: "flex",
     padding: "0px 5px 0px 5px",
@@ -245,6 +77,7 @@ function ScrapPage() {
     marginLeft: "-0.3%",
     marginRight: "5px",
     color: "#677779",
+    backgroundColor: "#91e2c3",
   };
 
   const renderPosts = (posts) => {
@@ -359,21 +192,11 @@ function ScrapPage() {
                       fontSize: "12px",
                     }}
                   >
-                    {item.web && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#91e2c3",
-                        }}
-                      >
-                        #WEB
-                      </span>
-                    )}
+                    {item.web && <span style="categoryTagStyle">#WEB</span>}
                     {item.app && (
                       <span
                         style={{
                           ...categoryTagStyle,
-                          backgroundColor: "#91e2c3",
                         }}
                       >
                         #APP
@@ -383,7 +206,6 @@ function ScrapPage() {
                       <span
                         style={{
                           ...categoryTagStyle,
-                          backgroundColor: "#91e2c3",
                         }}
                       >
                         #GAME
@@ -393,7 +215,6 @@ function ScrapPage() {
                       <span
                         style={{
                           ...categoryTagStyle,
-                          backgroundColor: "#91e2c3",
                         }}
                       >
                         #AI

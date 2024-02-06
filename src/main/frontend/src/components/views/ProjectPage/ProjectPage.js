@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { truncateString } from "../../utils/common";
+import { truncateString, formatDate, formatDateTime } from "../../utils/common";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 //import { useDispatch } from 'react-redux';
 import {
@@ -14,8 +14,6 @@ import {
 } from "antd";
 import { request } from "../../../hoc/request";
 import SearchInProjectPage from "./SearchInProjectPage";
-//import { lastVisitedEndpoint } from '../../../_actions/actions'
-//import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import "./ProjectPage.css";
 
 function ProjectPage() {
@@ -53,9 +51,8 @@ function ProjectPage() {
   // 최신일순/마감일순, 조회순에 대한 정렬 옵션,
   // 검색어 키워드 문자열
   // 를 기반으로 백엔드에 동적쿼리 보냄
+
   useEffect(() => {
-    console.log("현재 선택된 배너 정보", selectedBanners);
-    console.log("현재 검색 완료된 키워드: ", searchTerm);
     fetchFilteredPosts();
   }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
@@ -187,36 +184,6 @@ function ProjectPage() {
     navigate("/project/upload");
   };
 
-  // 2023826 -> 2023년 8월 26일 형식으로 변환
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Month is zero-based
-    const day = date.getDate();
-    return `${year}년 ${month}월 ${day}일`;
-  };
-
-  // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환
-  const formatDateTime = (dateTimeArray) => {
-    if (!Array.isArray(dateTimeArray)) {
-      // dateTimeArray가 배열이 아닌 경우 오류 처리
-      return "Invalid date and time format";
-    }
-    const [year, month, day, hours, minutes] = dateTimeArray;
-    const date = new Date(year, month - 1, day, hours, minutes);
-
-    // 년, 월, 일, 시간, 분 형식으로 포맷팅
-    const formattedYear = date.getFullYear();
-    const formattedMonth = (date.getMonth() + 1).toString().padStart(2, "0"); // 월을 2자리로 표현
-    const formattedDay = date.getDate().toString().padStart(2, "0"); // 일을 2자리로 표현
-    const formattedHours = date.getHours().toString().padStart(2, "0"); // 시를 2자리로 표현
-    const formattedMinutes = date.getMinutes().toString().padStart(2, "0"); // 분을 2자리로 표현
-
-    const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
-
-    return formattedDateTime;
-  };
-
   // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
   // 처음엔 all(모든 게시물 상태)
   // all이 아닌 다른 게시물을 선택하는 순간 all은 selectedBanners에서 지워지고, 선택된 배너가 selectedBanners에 추가됨
@@ -272,11 +239,6 @@ function ProjectPage() {
     setSearchTerm(value); // 검색어를 세팅
     setRelatedSearchTermEnable(false); // 엔터나 클릭을 눌렀으므로 연관 검색어 렌더링 여부를 false로 설정
     setCurrentPage(0); // 검색어가 변경되면 0페이지로 이동
-  };
-
-  // 타이핑 시마다 변경(검색어 관련)
-  const handleSearchTerm = (value) => {
-    setCurrentSearchTerm(value);
   };
 
   // 드롭다운 박스에서 정렬 옵션
@@ -504,7 +466,7 @@ function ProjectPage() {
       <br />
       <SearchInProjectPage
         onSearch={handleSearch}
-        onChange={handleSearchTerm}
+        onChange={(value) => setCurrentSearchTerm(value)}
       />
 
       {/* 연관 검색어 활성화 여부에 따라 렌더링 진행 */}

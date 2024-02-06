@@ -55,11 +55,12 @@ function SearchPortfolioListPage(onSearch) {
   // 백엔드에 입력 완료된 검색어 기반으로, match되는 검색 결과물 가져오기
   const fetchSearchResultLists = async () => {
     const queryParams = new URLSearchParams({
+      //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
       selectedBanners: selectedBanners.join(","),
       page: currentPage, //현재 페이지 정보
       size: pageSize, //페이징을 할 크기(현재는 한페이지에 9개씩만 나오도록 구성했음)
       sortOption: sortOption,
-      searchTerm: currentSearchTerm.searchTerm, // 검색어 키워드 문자열
+      searchTerm: currentSearchTerm.searchTerm, // 검색어 키워드 문자열\
     });
     try {
       const response = await request(
@@ -165,7 +166,7 @@ function SearchPortfolioListPage(onSearch) {
               {/**<Card onClick={() => onClickHandler(item.nickName)} title={`👩🏻‍💻 ${item.nickName}`} style={{ height: '270px', marginBottom: '10px', cursor: 'pointer' }}>*/}
               {/* style = {{cursor: 'pointer'}} */}
               <Card
-                onClick={() => onClickHandler(item.nickName)}
+                onClick={() => navigate(`/portfolio/${item.nickName}`)}
                 headStyle={{ background: "#e5eefc" }}
                 bodyStyle={{ paddingTop: "15px", paddingBottom: "15px" }}
                 title={

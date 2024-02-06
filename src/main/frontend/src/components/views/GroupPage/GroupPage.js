@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { truncateString } from "../../utils/common";
+import { truncateString, formatDate, formatDateTime } from "../../utils/common";
 //import { useDispatch } from 'react-redux';
 import {
   Divider,
@@ -37,17 +37,11 @@ function GroupPage() {
 
   const myNickName = window.localStorage.getItem("user_nickname");
 
-  // 페이지가 새로 마운트 될 때마다 실행됨.
   // 내가 보고있는 게시물이 내가 쓴 글인지(postsOption === writer) 또는 내가 지원한 글인지(postsOption === applicant)
   // 현재 사용자가 하이라이트한 페이지 번호 상태,
   // 등록순/마감일순에 대한 정렬 옵션,
   // 를 기반으로 백엔드에 동적쿼리 보냄
   useEffect(() => {
-    fetchFilteredPosts();
-  }, [postsOption, currentPage, sortOption]);
-
-  // 실제 백엔드에 동적 쿼리 보내는 곳
-  const fetchFilteredPosts = async () => {
     const queryParams = new URLSearchParams({
       //URLSearchParams :'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
       postsOption: postsOption, // 내가 쓴 글인가? 내가 지원한 글인가?
@@ -56,47 +50,21 @@ function GroupPage() {
       sortOption: sortOption, // 등록순, 모집일자 마감순
     });
 
-    try {
-      const response = await request("GET", `/getGroupPosts?${queryParams}`);
-      console.log("response : ", response);
-      console.log("typeof", typeof response);
-
-      setData(response.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
-      setTotalPages(response.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    request("GET", `/getGroupPosts?${queryParams}`)
+      .then((res) => {
+        setData(res.data.content);
+        setTotalPages(res.data.totalPages);
+      })
+      .catch((rej) => {
+        console.error(rej);
+      });
+  }, [postsOption, currentPage, sortOption]);
 
   // 페이징 된 각 게시물 목록 하나를 클릭하면 그에 해당하는 게시물의 디테일 페이지로 navigate함
   const handleRowClick = (postsId, postType) => {
-    // /project/detail/${postsId} 또는 /study/detail/${postsId}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-    // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-    // 인자 1 : 유효한 전 페이지 / 인자 2 : 유효한 전 전 페이지 / 인자 3: 유효한 전 전 전 페이지
-    //dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
-    //setLastVisitedEndpoint('/group');
-    //setLastLastVisitedEndpoint('/group');
-    //setLastLastLastVisitedEndpoint('/group');
-
-    if (postType === "PROJECT") {
-      navigate(`/project/detail/${postsId}`);
-    } else {
-      navigate(`/study/detail/${postsId}`);
-    }
-  };
-
-  // 게시물 목록에서 닉네임 필드를 클릭하면, 해당 닉네임을 가진 회원의 포트폴리오 창으로 navigate
-  const handleNicknameClick = (nickName) => {
-    navigate(`/portfolio/${nickName}`);
-  };
-
-  // 2023826 -> 2023년 8월 26일 형식으로 변환
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Month is zero-based
-    const day = date.getDate();
-    return `${year}년 ${month}월 ${day}일`;
+    postType === "PROJECT"
+      ? navigate(`/project/detail/${postsId}`)
+      : navigate(`/study/detail/${postsId}`);
   };
 
   // 등록순, 마감일 순 버튼이 눌러지면 현재 선택된 버튼으로 세팅하고, 페이지는 0번으로 간다
@@ -113,18 +81,6 @@ function GroupPage() {
     setSortOption("latestPosts"); // 기본 설정은 최신등록순/등록순으로 고정
   };
 
-  // 지원자 또는 글쓴이 닉네임 클릭 핸들러
-  const handleNickNameClick = (nickName) => {
-    // /portfolio/${nickName}로 이동했을 때, 해당 페이지에서 "목록으로 돌아가기" 버튼을 클릭하면,
-    // 가장 마지막에 저장한 엔드포인트인 /group으로 오게끔 dispatch를 통해 lastVisitedEndpoint를 /group으로 설정
-    //dispatch(lastVisitedEndpoint('/group', '/group', '/group'));
-    //setLastVisitedEndpoint('/group');
-    //setLastLastVisitedEndpoint('/group');
-    //setLastLastLastVisitedEndpoint('/group');
-    // 해당 사용자 포트폴리오 페이지로 이동 (PortfolioPage.js와 연관)
-    navigate(`/portfolio/${nickName}`);
-  };
-
   // 승인하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가
   const handleApproveUser = async (nickName, postsId) => {
     const queryParams = new URLSearchParams({
@@ -135,16 +91,15 @@ function GroupPage() {
       sortOption: sortOption, // 등록순, 모집일자 마감순
     });
 
-    try {
-      // 승인 상태를 '수정'
-      const response = await request("PUT", `/posts/approve?${queryParams}`);
-
-      setData(response.data.content); // 변경된 데이터를 갖고 새롭게 data를 세팅함
-      setIsModalVisible(false); // 모달은 안보이게 설정
-      setCancelModalVisible(false);
-    } catch (error) {
-      console.error("Error approving user:", error);
-    }
+    request("PUT", `/posts/approve?${queryParams}`)
+      .then((res) => {
+        setData(res.data.content); // 변경된 데이터를 갖고 새롭게 data를 세팅함
+        setIsModalVisible(false); // 모달은 안보이게 설정
+        setCancelModalVisible(false);
+      })
+      .catch((err) => {
+        console.error(" !Error! approving user : ", err);
+      });
   };
 
   // 승인 취소하려는 유저의 닉네임(nickName)과 게시물 아이디(postsId)를 받아서 승인 허가 취소
@@ -170,27 +125,6 @@ function GroupPage() {
     } catch (error) {
       console.error("Error approving user:", error);
     }
-  };
-
-  // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환
-  const formatDateTime = (dateTimeArray) => {
-    if (!Array.isArray(dateTimeArray)) {
-      // dateTimeArray가 배열이 아닌 경우 오류 처리
-      return "Invalid date and time format";
-    }
-    const [year, month, day, hours, minutes] = dateTimeArray;
-    const date = new Date(year, month - 1, day, hours, minutes);
-
-    // 년, 월, 일, 시간, 분 형식으로 포맷팅
-    const formattedYear = date.getFullYear();
-    const formattedMonth = (date.getMonth() + 1).toString().padStart(2, "0"); // 월을 2자리로 표현
-    const formattedDay = date.getDate().toString().padStart(2, "0"); // 일을 2자리로 표현
-    const formattedHours = date.getHours().toString().padStart(2, "0"); // 시를 2자리로 표현
-    const formattedMinutes = date.getMinutes().toString().padStart(2, "0"); // 분을 2자리로 표현
-
-    const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
-
-    return formattedDateTime;
   };
 
   const categoryTagStyle = {
