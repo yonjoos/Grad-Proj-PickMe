@@ -1,0 +1,19 @@
+.categoryTag-project {
+  display: flex;
+  padding: 0px 5px 0px 5px;
+  background-color: #faf082;
+  border-radius: 50px;
+  color: #ff8400;
+  margin-left: -0.3%;
+  margin-right: 5px;
+}
+
+.categoryTag-study {
+  display: flex;
+  padding: 0px 5px 0px 5px;
+  background-color: #fee5eb;
+  border-radius: 50px;
+  color: #ff4646;
+  margin-left: -0.3%;
+  margin-right: 5px;
+}

@@ -21,6 +21,7 @@ import SearchInStudyPage from "./SearchInStudyPage";
 //import { lastVisitedEndpoint } from '../../../_actions/actions'
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import "./StudyPage.css";
+import "../study-project.css";
 
 function StudyPage() {
   const navigate = useNavigate();
@@ -280,16 +281,6 @@ function StudyPage() {
     </Menu>
   );
 
-  const categoryTagStyle = {
-    display: "flex",
-    padding: "0px 5px 0px 5px",
-    backgroundColor: "#ff9900" /* 원하는 색상으로 변경 */,
-    borderRadius: "50px" /* 타원형 모양을 만들기 위해 사용 */,
-    color: "#ff4646" /* 텍스트 색상 설정 */,
-    marginLeft: "-0.3%",
-    marginRight: "6px",
-  };
-
   const linkStyle = {
     textDecoration: "none",
     transition: "text-decoration 0.3s",
@@ -399,45 +390,15 @@ function StudyPage() {
                   </div>
                   <strong style={{ display: "flex", fontSize: "12px" }}>
                     {item.web && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#fee5eb",
-                        }}
-                      >
-                        #WEB
-                      </span>
+                      <span className="categoryTag-study">#WEB</span>
                     )}
                     {item.app && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#fee5eb",
-                        }}
-                      >
-                        #APP
-                      </span>
+                      <span className="categoryTag-study">#APP</span>
                     )}
                     {item.game && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#fee5eb",
-                        }}
-                      >
-                        #GAME
-                      </span>
+                      <span className="categoryTag-study">#GAME</span>
                     )}
-                    {item.ai && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#fee5eb",
-                        }}
-                      >
-                        #AI
-                      </span>
-                    )}
+                    {item.ai && <span className="categoryTag-study">#AI</span>}
                   </strong>
                 </div>
                 <div

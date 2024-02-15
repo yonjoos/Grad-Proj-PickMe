@@ -21,6 +21,8 @@ import SearchInProjectPage from "./SearchInProjectPage";
 //import { lastVisitedEndpoint } from '../../../_actions/actions'
 //import { setLastVisitedEndpoint, setLastLastVisitedEndpoint, setLastLastLastVisitedEndpoint } from '../../../hoc/request';
 import "./ProjectPage.css";
+import "../study-project.css";
+import { renderProfileImage } from "../../utils/ProfileImage/profileImage";
 
 function ProjectPage() {
   const navigate = useNavigate();
@@ -47,8 +49,18 @@ function ProjectPage() {
   // 키워드를 치는 순간 순간마다 연관 검색어 값을 백엔드에서 받아옴
   useEffect(() => {
     console.log("현재 검색된 키워드: ", currentSearchTerm);
-    setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
-    fetchFilteredSearchLists();
+
+    if (currentSearchTerm === "") {
+      setSearchData({ projectSearchDtoList: [] });
+    } else {
+      setRelatedSearchTermEnable(true); // 연관 검색어 렌더링 활성화
+
+      fetchFilteredSearchLists(
+        new URLSearchParams({
+          searchTerm: currentSearchTerm,
+        })
+      );
+    }
   }, [currentSearchTerm]);
 
   // 페이지가 새로 마운트 될 때마다 실행됨.
@@ -58,65 +70,47 @@ function ProjectPage() {
   // 검색어 키워드 문자열
   // 를 기반으로 백엔드에 동적쿼리 보냄
   useEffect(() => {
-    console.log("현재 선택된 배너 정보", selectedBanners);
-    console.log("현재 검색 완료된 키워드: ", searchTerm);
-    fetchFilteredPosts();
+    fetchFilteredPosts(
+      new URLSearchParams({
+        //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
+        selectedBanners: selectedBanners.join(","), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
+        page: currentPage, //현재 페이지 정보
+        size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
+        sortOption: sortOption, // 최신 등록순, 모집일자 마감순
+        searchTerm: searchTerm, // 검색어 키워드 문자열
+      })
+    );
   }, [selectedBanners, currentPage, sortOption, searchTerm]);
 
   // 백엔드에 연관 검색어에 기반한 프로젝트 제목 값을 받아오기 위한 요청 보내기
-  const fetchFilteredSearchLists = async () => {
+  const fetchFilteredSearchLists = async (queryParams) => {
     try {
       // 만약 검색어가 있다면,
-      if (currentSearchTerm !== "") {
-        const queryParams = new URLSearchParams({
-          searchTerm: currentSearchTerm, // 검색어 세팅
-        });
+      // 백엔드에서 데이터 받아오기
+      const response = await request(
+        "GET",
+        `/getFilteredSearchLists?${queryParams}`
+      );
 
-        // 백엔드에서 데이터 받아오기
-        const response = await request(
-          "GET",
-          `/getFilteredSearchLists?${queryParams}`
-        );
-
-        // 데이터가 있다면 세팅, 없으면 각각 빈 배열로 세팅
-        if (response.data) {
-          setSearchData({
-            projectSearchDtoList: response.data.projectSearchDtoList || [],
-          });
-        } else {
-          // Handle the case where response.data.content is undefined
-          console.error(
-            "Error fetching data: response.data.content is undefined"
-          );
-        }
-      } else {
-        // 검색어가 없다면, 빈 배열로 세팅
-        setSearchData({
-          projectSearchDtoList: [],
-        });
-      }
+      // 데이터가 있다면 세팅, 없으면 각각 빈 배열로 세팅
+      const dat = await response.data;
+      setSearchData({
+        projectSearchDtoList: dat.projectSearchDtoList || [],
+      });
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching data: response.data.content is undefined");
+      //console.error("Error fetching data:", error);
     }
   };
 
-  // 백엔드에서 받아온 연관 검색어(프로젝트) 결과를 가지고 실제 렌더링 진행.
-  // 프로젝트를 각각 카드로 감싸고, 그 안엔 버튼으로 감쌈
   const renderSection = (title, dataArray) => {
-    const handleButtonClick = (title, id, name) => {
-      // dispatch(lastVisitedEndpoint('/project', '/project', '/project'));
-      // setLastVisitedEndpoint('/project');
-      // setLastLastVisitedEndpoint('/project');
-      // setLastLastLastVisitedEndpoint('/project');
-
-      // 각각에 대해 올바르게 라우팅 걸어주기
+    const handleButtonClick = (title, id) => {
       if (title === "Project") {
         navigate(`/project/detail/${id}`);
       }
     };
-
     // 빈 배열이 아니라면, 즉, 렌더링해야하는 값임
-    if (dataArray && dataArray.length > 0) {
+    if (dataArray?.length > 0) {
       return (
         <Card size="small" style={{ padding: 0, margin: 0, width: "100%" }}>
           <div style={{ width: "100%", textAlign: "left", padding: 0 }}>
@@ -133,7 +127,7 @@ function ProjectPage() {
                   padding: 0,
                   margin: 0,
                 }}
-                onClick={() => handleButtonClick(title, item.id, item.name)}
+                onClick={() => handleButtonClick(title, item.id)}
               >
                 {truncateString(item.name, 55)}
               </Button>
@@ -146,24 +140,16 @@ function ProjectPage() {
   };
 
   // 실제 백엔드에 동적 쿼리 보내는 곳
-  const fetchFilteredPosts = async () => {
+  const fetchFilteredPosts = async (queryParams) => {
     try {
-      const queryParams = new URLSearchParams({
-        //URLSearchParams 이 클래스는 URL에 대한 쿼리 매개변수를 작성하고 관리하는 데 도움. 'GET' 요청의 URL에 추가될 쿼리 문자열을 만드는 데 사용됨.
-        selectedBanners: selectedBanners.join(","), // selectedBanners 배열을 쉼표로 구분된 문자열로 변환
-        page: currentPage, //현재 페이지 정보
-        size: pageSize, //페이징을 할 크기(현재는 한페이지에 3개씩만 나오도록 구성했음)
-        sortOption: sortOption, // 최신 등록순, 모집일자 마감순
-        searchTerm: searchTerm, // 검색어 키워드 문자열
-      });
-
       //현재 사용자가 선택한 페이지와 배너 정보를 queryParams에 넣어서 백엔드에 요청
       const response = await request(
         "GET",
         `/getFilteredProjects?${queryParams}`
       );
 
-      setData(response.data.content); //백엔드에서 받은 게시물 목록을 data에 저장
+      const dat = await response.data.content;
+      setData(dat); //백엔드에서 받은 게시물 목록을 data에 저장
       setTotalPages(response.data.totalPages); //백엔드에서 받은 전체 페이지 수 정보를 totalPages에 저장
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -280,16 +266,6 @@ function ProjectPage() {
     </Menu>
   );
 
-  const categoryTagStyle = {
-    display: "flex",
-    padding: "0px 5px 0px 5px",
-    backgroundColor: "#faf082" /* 원하는 색상으로 변경 */,
-    borderRadius: "50px" /* 타원형 모양을 만들기 위해 사용 */,
-    color: "#ff8400" /* 텍스트 색상 설정 */,
-    marginLeft: "-0.3%",
-    marginRight: "5px",
-  };
-
   const linkStyle = {
     textDecoration: "none",
     transition: "text-decoration 0.3s",
@@ -321,57 +297,7 @@ function ProjectPage() {
                 <div
                   style={{ width: "80%", display: "grid", marginLeft: "10px" }}
                 >
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        marginBottom: "10px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div>
-                        <Link
-                          to={
-                            myNickName === item.nickName
-                              ? `/portfolio`
-                              : `/portfolio/${item.nickName}`
-                          }
-                          key={index}
-                          className="hoverable-item"
-                          onMouseEnter={handleMouseEnter}
-                          onMouseLeave={handleMouseLeave}
-                          style={linkStyle}
-                        >
-                          <img
-                            style={{
-                              borderRadius: "50%",
-                              width: "40px",
-                              height: "40px",
-                              border: "3px solid salmon",
-                              marginRight: "10px",
-                            }}
-                            src={`https://storage.googleapis.com/hongik-pickme-bucket/${item.imageUrl}`}
-                          />
-                        </Link>
-                      </div>
-                      <div>
-                        <Link
-                          to={
-                            myNickName === item.nickName
-                              ? `/portfolio`
-                              : `/portfolio/${item.nickName}`
-                          }
-                          key={index}
-                          className="hoverable-item"
-                          onMouseEnter={handleMouseEnter}
-                          onMouseLeave={handleMouseLeave}
-                          style={linkStyle}
-                        >
-                          <strong className="nickname">{item.nickName}</strong>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                  <div>{renderProfileImage(item)}</div>
                   <div style={{ display: "flex" }}>
                     <Link
                       to={`/project/detail/${item.id}`}
@@ -393,50 +319,22 @@ function ProjectPage() {
                       textAlign: "left",
                       cursor: "pointer",
                     }}
-                    onMouseUp={() => handleRowClick(item.id)}
+                    onMouseUp={() => navigate(`/project/detail/${item.id}`)}
                   >
                     {truncateString(item.briefContent, 50)}
                   </div>
                   <strong style={{ display: "flex", fontSize: "12px" }}>
                     {item.web && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#faf082",
-                        }}
-                      >
-                        #WEB
-                      </span>
+                      <span className="categoryTag-project">#WEB</span>
                     )}
                     {item.app && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#faf082",
-                        }}
-                      >
-                        #APP
-                      </span>
+                      <span className="categoryTag-project">#APP</span>
                     )}
                     {item.game && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#faf082",
-                        }}
-                      >
-                        #GAME
-                      </span>
+                      <span className="categoryTag-project">#GAME</span>
                     )}
                     {item.ai && (
-                      <span
-                        style={{
-                          ...categoryTagStyle,
-                          backgroundColor: "#faf082",
-                        }}
-                      >
-                        #AI
-                      </span>
+                      <span className="categoryTag-project">#AI</span>
                     )}
                   </strong>
                 </div>
@@ -534,7 +432,7 @@ function ProjectPage() {
             </Button>
           </Col>
           <Col span={6} style={{ textAlign: "right" }}>
-            <Button type="primary" onClick={onClickHandler}>
+            <Button type="primary" onClick={() => navigate("/project/upload")}>
               게시물 등록
             </Button>
           </Col>
