@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { truncateString, formatDate, formatDateTime } from '../../common/common';
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 //import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
@@ -79,36 +80,7 @@ function SearchStudyListPage(onSearch) {
         navigate(`/study/detail/${studyId}`);
     }
 
-    // 2023826 -> 2023년 8월 26일 형식으로 변환
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1; // Month is zero-based
-        const day = date.getDate();
-        return `${year}년 ${month}월 ${day}일`;
-    };
 
-    // 2023/8/26-11:11분을 2023년 8월 26일 11시 11분 형식으로 변환 
-    const formatDateTime = (dateTimeArray) => {
-
-        if (!Array.isArray(dateTimeArray)) {
-            // dateTimeArray가 배열이 아닌 경우 오류 처리
-            return 'Invalid date and time format';
-        }
-        const [year, month, day, hours, minutes] = dateTimeArray;
-        const date = new Date(year, month - 1, day, hours, minutes);
-
-        // 년, 월, 일, 시간, 분 형식으로 포맷팅
-        const formattedYear = date.getFullYear();
-        const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0'); // 월을 2자리로 표현
-        const formattedDay = date.getDate().toString().padStart(2, '0'); // 일을 2자리로 표현
-        const formattedHours = date.getHours().toString().padStart(2, '0'); // 시를 2자리로 표현
-        const formattedMinutes = date.getMinutes().toString().padStart(2, '0'); // 분을 2자리로 표현
-
-        const formattedDateTime = `${formattedYear}.${formattedMonth}.${formattedDay}. ${formattedHours}:${formattedMinutes}`;
-
-        return formattedDateTime;
-    };
 
 
     // 배너를 선택할 때마다 selectedBanners가 추가되거나 변경됨
@@ -303,13 +275,7 @@ function SearchStudyListPage(onSearch) {
         }
     };
 
-    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
-    const truncateString = (str, maxLength) => {
-        if (str.length > maxLength) {
-            return str.slice(0, maxLength) + '...';
-        }
-        return str;
-    };
+
 
     // 검색어가 새로이 입력되거나 변경될때마다 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
     const handleSearch = (value) => {

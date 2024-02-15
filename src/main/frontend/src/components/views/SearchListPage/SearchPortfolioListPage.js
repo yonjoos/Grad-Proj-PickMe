@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { truncateString } from '../../common/common';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 //import { useSelector, useDispatch } from 'react-redux';
 import { Row, Col, Button, Card, Pagination, Divider, Menu, Dropdown } from 'antd';
@@ -224,13 +225,7 @@ function SearchPortfolioListPage(onSearch) {
         }
     };
 
-    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
-    const truncateString = (str, maxLength) => {
-        if (str.length > maxLength) {
-            return str.slice(0, maxLength) + '...';
-        }
-        return str;
-    };
+
 
     // 검색어가 새로이 입력되거나 변경될때마다 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
     const handleSearch = (value) => {

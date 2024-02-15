@@ -1,4 +1,5 @@
 import React from 'react';
+import { truncateString, formatDate } from '../../common/common';
 import { useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Card, Carousel } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
@@ -114,13 +115,7 @@ function LandingPage() {
         }
     };
 
-    // 너무 긴 제목이나 닉네임이면 적당한 길이로 자르고, ... 붙이기
-    const truncateString = (str, maxLength) => {
-        if (str.length > maxLength) {
-            return str.slice(0, maxLength) + '...';
-        }
-        return str;
-    };
+
 
     // 배너 클릭시 about페이지로 이동
     const handleImageClick = (index) => {
@@ -159,14 +154,7 @@ function LandingPage() {
         }
     }
 
-    // 2023826 -> 2023년 8월 26일 형식으로 변환
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1; // Month is zero-based
-        const day = date.getDate();
-        return `${year}년 ${month}월 ${day}일`;
-    };
+
 
     // 검색어가 새로이 입력되거나 변경될때마다 여기서 감지해서 백엔드에 보낼 searchTerm을 세팅함
     const handleSearch = (value) => {

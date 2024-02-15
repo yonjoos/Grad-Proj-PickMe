@@ -1,3 +1,4 @@
+import { formatDate } from "../../../common/common";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
@@ -83,14 +84,8 @@ function DetailProjectNotifyPage() {
     }
 
 
-    // 2023826 -> 2023년 8월 26일 형식으로 변환
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = date.getMonth() + 1; // Month is zero-based
-        const day = date.getDate();
-        return `${year}년 ${month}월 ${day}일`;
-    };
+
+    
 
  
 
